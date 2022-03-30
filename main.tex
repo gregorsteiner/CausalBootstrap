@@ -190,7 +190,7 @@ $$
 
 Let $\widehat{G}(t) = \frac{1}{B} \sum_{i=1}^{B} \ind\{T_b^* \leq t\}$ be the empirical distribution function of the t-ratios obtained through resampling. Confidence intervals can then be constructed as 
 \begin{align} \label{CI}
-	CI(1-\alpha) = \left[ \widehat{\tau} - \frac{\widehat{\sigma}}{\sqrt{n}} \widehat{G}^{-1}(1-\alpha); \widehat{\tau} + \frac{\widehat{\sigma}}{\sqrt{n}} \widehat{G}^{-1}(\alpha)  \right],
+	CI(1-\alpha) = \left[ \widehat{\tau} - \frac{\widehat{\sigma}}{\sqrt{n}} \widehat{G}^{-1}(1-\alpha); \widehat{\tau} - \frac{\widehat{\sigma}}{\sqrt{n}} \widehat{G}^{-1}(\alpha)  \right],
 \end{align}
 where $\widehat{G}^{-1}$ denotes the quantile function of the empirical distribution $\widehat{G}$.
 
