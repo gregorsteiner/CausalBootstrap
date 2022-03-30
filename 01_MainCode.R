@@ -9,9 +9,6 @@ source("00_Functions.R")
 # read data
 dat <- as.data.frame(haven::read_dta("Replication Data/3_mainexp_responses.dta"))
 
-# first look
-head(dat)
-
 # delete observation 167 due to encoding problem (Invalid byte sequence)
 dat <- dat[-167, ]
 

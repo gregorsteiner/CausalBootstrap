@@ -1,0 +1,26 @@
+---
+title: "The Bootstrap for Causal Inference"
+author: "Gregor Steiner"
+date: "`r format(Sys.Date(), format = '%m/%d/%Y')`"
+output:
+  md_document:
+    variant: markdown_github
+bibliography: "lit.bib" 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.pos = "center",
+                      fig.width = 8,
+                      fig.height = 6)
+```
+
+
+@Imbens_2021 provide a bootstrap procedure for inference on causal parameters. Unlike the classical bootstrap, this also accounts for design uncertainty, that is uncertainty that stems from the stochastic nature of the treatment assignment. 
+
+## References
+
+
+
