@@ -17,8 +17,11 @@ knitr::opts_chunk$set(echo = FALSE,
                       fig.height = 6)
 ```
 
+## The Bootstrap for Causal Inference
 
-@Imbens_2021 provide a bootstrap procedure for inference on causal parameters. Unlike the classical bootstrap, this also accounts for design uncertainty, that is uncertainty that stems from the stochastic nature of the treatment assignment. 
+@Imbens_2021 provide a bootstrap procedure for inference on causal parameters. Unlike the classical bootstrap, this also accounts for design uncertainty, that is uncertainty stemming from the stochastic nature of the treatment assignment. 
+
+In this short paper, I present the procedure proposed by @Imbens_2021 and apply it to experimental data by @Bursztyn_2017.
 
 ## References
 
