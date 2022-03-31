@@ -165,34 +165,33 @@ where $\widehat{\tau}$ is the estimator of the ATE and $\widehat{\sigma} = \wide
 
 The proposed algorithm consists of four main steps:
 
-\subsubsection{Generating the population}
-
-To generate an artificial population of size $N$, the $n$ sampled observations are replicated according to the following procedure:
 \begin{enumerate}
-	\item Split the sample in treated and untreated, i.e. $(Y_j^0)_{j=1}^{n_0}$ and $(Y_j^1)_{j=1}^{n_1}$ and order them in an increasing fashion.
-	\item Define the rank variable $\widehat{U}_j^D := \frac{j}{n_D}$ for $D \in \{0, 1\}$.
-	\item Let $N_0 = \lceil \frac{n_0}{n} N \rceil$, $N_1 = N - N_0$ and include $M_j^0 := \lceil \widehat{U}_{j+1}^0 N_0 \rceil - \lceil \widehat{U}_{j}^0 N_0 \rceil$ copies of $Y_j^0$ and $M_j^1 := \lceil \widehat{U}_{j+1}^1 N_1 \rceil - \lceil \widehat{U}_{j}^1 N_1 \rceil$ copies of $Y_j^1$.
+	
+	\item \textbf{Generating the population:} To generate an artificial population of size $N$, the $n$ sampled observations are replicated according to the following procedure:
+	\begin{enumerate}
+		\item Split the sample in treated and untreated, i.e. $(Y_j^0)_{j=1}^{n_0}$ and $(Y_j^1)_{j=1}^{n_1}$ and order them in an increasing fashion.
+		\item Let $N_0 = \lceil \frac{n_0}{n} N \rceil$, $N_1 = N - N_0$ and include 
+		$$M_j^0 := \lceil \frac{j}{n_0} N_0 \rceil - \lceil \frac{j-1}{n_0} N_0 \rceil$$
+		copies of $Y_j^0$ with $D_j = 0$ for $j = 1, \ldots, n_0$, and 
+		$$M_j^1 := \lceil \frac{j}{n_1} N_1 \rceil - \lceil \frac{j-1}{n_1} N_1 \rceil$$
+		copies of $Y_j^1$ with $D_j = 1$ for $j = 1, \ldots, n_1$.
+	\end{enumerate}
+	Thus, we end up with a population $(Y_j, D_j)_{j=1}^N$, where the pairs of values are drawn from the sample according to the rule above.
+	
+	\item \textbf{Imputing missing potential values:} The next step is imputing the missing potential outcomes. That is, for treated units we want an estimate of $Y_i(0)$ and for untreated units of $Y_i(1)$. As already discussed above, we simply use \ref{imputation1} and \ref{imputation2}, where $\widehat{F}_0$ and $\widehat{F}_1$ are the empirical distribution functions estimated from the untreated and treated units respectively.
+	
+	\item \textbf{Resampling}: For each bootstrap replication $b = 1,\ldots, B$, $n$ pairs of ($Y_{ib}^*(0), Y_{ib}^*(1)$) are randomly drawn from the generated population. In the drawn bootstrap sample, treatment is randomly assigned with probability $p:= \mathbb{P}(D_i = 1 | R_i = 1)$, that is the probability of treatment in the actual sample. Then, we can compute the bootstrap sample estimators $\widehat{\tau}_b^*$ and $\widehat{\sigma}_b^*$, and record the t-ratio
+	$$
+	T_b^* = \frac{\widehat{\tau}_b^* - \widehat{\tau}}{\widehat{\sigma}_b^* / \sqrt{n}}.
+	$$
+	
+	\item \textbf{Confidence intervals:} Let $\widehat{G}(t) = \frac{1}{B} \sum_{i=1}^{B} \ind\{T_b^* \leq t\}$ be the empirical distribution function of the t-ratios obtained through resampling. Confidence intervals can then be constructed as 
+	\begin{align} \label{CI}
+		CI(1-\alpha) = \left[ \widehat{\tau} - \frac{\widehat{\sigma}}{\sqrt{n}} \widehat{G}^{-1}(1-\alpha); \widehat{\tau} - \frac{\widehat{\sigma}}{\sqrt{n}} \widehat{G}^{-1}(\alpha)  \right],
+	\end{align}
+	where $\widehat{G}^{-1}$ denotes the quantile function of the empirical distribution $\widehat{G}$.
+	
 \end{enumerate}
-Thus, we end up with a population $(Y_j, W_j)_{j=1}^N$, where the pairs of values are drawn from the sample according to the rule above.
-
-\subsubsection{Imputing missing potential values}
-
-The next step is imputing the missing potential outcomes. That is, for treated units we want an estimate of $Y_i(0)$ and for untreated units of $Y_i(1)$. As already discussed above, we simply use \ref{imputation1} and \ref{imputation2}, where $\widehat{F}_0$ and $\widehat{F}_1$ are the empirical distribution functions estimated from the untreated and treated units respectively.
-
-\subsubsection{Resampling}
-
-For each bootstrap replication $b = 1,\ldots, B$, $n$ pairs of ($Y_{ib}^*(0), Y_{ib}^*(1)$) are randomly drawn from the generated population. In the drawn bootstrap sample, treatment is randomly assigned with probability $p:= \mathbb{P}(D_i = 1 | R_i = 1)$, that is the probability of treatment in the actual sample. Then, we can compute the bootstrap sample estimators $\widehat{\tau}_b^*$ and $\widehat{\sigma}_b^*$, and record the t-ratio
-$$
-T_b^* = \frac{\widehat{\tau}_b^* - \widehat{\tau}}{\widehat{\sigma}_b^* / \sqrt{n}}.
-$$
-
-\subsubsection{Confidence intervals}
-
-Let $\widehat{G}(t) = \frac{1}{B} \sum_{i=1}^{B} \ind\{T_b^* \leq t\}$ be the empirical distribution function of the t-ratios obtained through resampling. Confidence intervals can then be constructed as 
-\begin{align} \label{CI}
-	CI(1-\alpha) = \left[ \widehat{\tau} - \frac{\widehat{\sigma}}{\sqrt{n}} \widehat{G}^{-1}(1-\alpha); \widehat{\tau} - \frac{\widehat{\sigma}}{\sqrt{n}} \widehat{G}^{-1}(\alpha)  \right],
-\end{align}
-where $\widehat{G}^{-1}$ denotes the quantile function of the empirical distribution $\widehat{G}$.
 
 \subsection{Asymptotics}
 
@@ -299,7 +298,7 @@ The next step is using the bootstrap procedure to construct confidence intervals
 
 It is important to consider what population we generalize to, that is what $N$ is in this case. It seems reasonable to take all single females in the US who are close in age to the students studied by \cite{Bursztyn_2017}. According to the 2010 census, the female population in the age range 20-29 is about 21 million\footnote{More information is available at the \href{https://www.census.gov/data/tables/time-series/demo/popest/2010s-national-detail.html}{Census website}}. Unfortunately, information on marital status is not available. Using the proportion of singles in our sample, yields about 9.95 million single women in the population.
 
-Table \ref{CIs} shows the estimated 95\% confidence intervals. For desired compensation, the upper bound is well below zero. This indicates a significant average effect of the treatment. On average, the treated students demand between 4,500 USD and 32,000 USD less in compensation. This makes the magnitude of the effect economically very relevant. For the desired number of weekly work hours, we do not find a significant effect.
+Table \ref{CIs} shows the estimated 95\% confidence intervals. For desired compensation, the upper bound is well below zero. This indicates a significant average effect of the treatment. On average, the students demand between USD 2,500 and USD 29,000 less in compensation if they received the public version of the questionnaire. This makes the magnitude of the effect economically very relevant. However, for the desired number of weekly work hours, the confidence interval includes zero. There seems to be no significant effect for the desired hours of weekly work.
 
 Thus, I can only partially confirm the results obtained by \cite{Bursztyn_2017}. They also obtain a significant effect for hours of work. However, they use standard errors from regressing hours on treatment. This is conceptually different from what is done here. While the causal bootstrap also accounts for design uncertainty, their approach only accounts for sampling uncertainty.
 
@@ -310,16 +309,18 @@ However, some doubts remain. First of all, the sample for the group of interest 
 	\centering
 	\caption{95\% Confidence Intervals for the ATE among single women}
 	\label{CIs}
-	\begin{tabular}{l|r|r|r}
+	\begin{tabular}{l|r|r}
 		\hline
-		& Lower Bound & Point Estimate & Upper Bound\\
+		& Lower Bound & Upper Bound\\
 		\hline
-		Compensation & -32.14 & -16.85 & -4.51\\
+		Compensation & -29.26 & -2.51\\
 		\hline
-		Hours & -3.95 & -3.54 & 2.25\\
+		Hours & -4.15 & 2.07\\
 		\hline
 	\end{tabular}
 \end{table}
+
+
 
 
 

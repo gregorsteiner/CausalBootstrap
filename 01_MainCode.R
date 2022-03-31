@@ -77,16 +77,15 @@ Boot.CIs <- do.call(rbind, lapply(c("compensation", "hours"), function(out){
   
   # combine table with CIs and point estimate
   res <- as.numeric(c("Lower Bound" = boot[["Confidence Interval"]]["Lower"],
-           "Point Estimate" = boot["ATE Estimator"],
-           "Upper Bound" = boot[["Confidence Interval"]]["Upper"]))
+                      "Upper Bound" = boot[["Confidence Interval"]]["Upper"]))
   return(res)
 }))
 
-colnames(Boot.CIs) <- c("Lower Bound", "Point Estimate", "Upper Bound")
+colnames(Boot.CIs) <- c("Lower Bound", "Upper Bound")
 rownames(Boot.CIs) <- c("Compensation", "Hours")
 
 # export as tex table
-knitr::kable(as.matrix(Boot.CIs), format = "latex", digits = 2)
+knitr::kable(Boot.CIs, format = "latex", digits = 2)
 
 
 
