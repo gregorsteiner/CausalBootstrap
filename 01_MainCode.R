@@ -64,6 +64,7 @@ knitr::kable(Results, format = "latex", digits = 2)
 
 # focus on single females
 dat.female.single <- dat[dat$class == "Female & Single", ]
+#dat.female.single <- dat.female.single[complete.cases(dat.female.single), ]
 
 # population size
 N <- round(mean(dat$maritalstatus == 0, na.rm = TRUE) * 21000000) # population size

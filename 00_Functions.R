@@ -54,7 +54,7 @@ causal_boot <- function(data, dep.var, treatment, N, B = 100, alpha = 0.05){
   
   # some parameters
   p <- mean(D) # proportion of treated observations
-  n <- nrow(data) # observations in the sample
+  n <- length(Y) # observations in the sample
   n1 <- sum(D)
   n0 <- n - n1
   N0 <- ceiling((n0 / n) * N)
@@ -74,19 +74,19 @@ causal_boot <- function(data, dep.var, treatment, N, B = 100, alpha = 0.05){
     dat <- dat[order(dat$Y), ]
     
     # define rank
-    dat$U <- 1:nrow(dat) / n.int
+    #dat$U <- 1:nrow(dat) / n.int
     
     # loop over rows and include copies of them
-    for (i in 1:(n.int - 1)) {
+    for (i in 1:n.int) {
       # compute number of inclusions
-      M <- ceiling(dat[i+1, "U"] * N.int) - ceiling(dat[i, "U"] * N.int)
+      M <- ceiling(i / n.int * N.int) - ceiling((i - 1) / n.int * N.int)
       
       # assign
       if(i == 1) store <- cbind(Y = rep(dat[i, "Y"], M), D = rep(dat[i, "D"], M))
       
       else{
         # try to generate replications, if an error occurs, we simply skip this one
-        append <- try(cbind(Y = rep(dat[i, "Y"], M), D = rep(dat[i, "D"], M)), silent = TRUE)
+        append <- cbind(Y = rep(dat[i, "Y"], M), D = rep(dat[i, "D"], M))
         
         # if the append object is a numeric matrix, we add it to the store object
         if(is.matrix(append) & is.numeric(append)) store <- rbind(store, append)
