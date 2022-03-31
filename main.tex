@@ -77,7 +77,7 @@ In causal inference, there are generally two sources of uncertainty: sampling un
 
 In this paper, constructing confidence intervals for the Average Treatment Effect (ATE) based on \cite{Imbens_2021} is extensively discussed. As an illustrative example, I then apply the method to marriage market incentives: Men tend to favor less ambitious romantic partners. This creates a trade-off for women: Actions that lead to professional success may lead to failure in the marriage market. Utilizing data by \cite{Bursztyn_2017}, I test whether women are more cautious about signaling professional ambition when potential partners observe their preferences.
 
-Section \ref{setting} introduces the setting and some notation, section \ref{bootstrap} explains the causal bootstrap, and section \ref{application} applies it to the marriage market incentives problem.
+Section \ref{setting} introduces the setting and some notation, section \ref{bootstrap} explains the causal bootstrap, section \ref{application} applies it to the marriage market incentives problem, and section \ref{Conclusion} concludes.
 
 
 
@@ -149,7 +149,7 @@ However, this is only valid for two-sided inference on the ATE. For other proble
 Furthermore, we need a few assumptions:
 \begin{enumerate}
 	\item The observed units are sampled at random from the population, that is ($Y_i(0), Y_i(1)$) are independent of $R_i$.
-	\item Treatment assignment is randomized, that is ($Y_i(0), Y_i(1)$) are independent of $D_i$.
+	\item Treatment assignment is randomized, that is ($Y_i(0), Y_i(1)$) are independent of $D_i$\footnote{The approach can be extended to observational studies, if the outcome is independent of treatment assignment conditional on observable covariates (unconfoundedness). For details see \cite{Imbens_2021} section 6.}.
 	\item The outcome $Y_i(D_i)$ for unit $i$ is not affected by other units' treatment status, that is the Stable Unit Treatment Value Assumption (SUTVA) holds.
 \end{enumerate}
 
@@ -167,7 +167,7 @@ The proposed algorithm consists of four main steps:
 
 \begin{enumerate}
 	
-	\item \textbf{Generating the population:} To generate an artificial population of size $N$, the $n$ sampled observations are replicated according to the following procedure:
+	\item \textit{Generating the population:} To generate an artificial population of size $N$, the $n$ sampled observations are replicated according to the following procedure:
 	\begin{enumerate}
 		\item Split the sample in treated and untreated, i.e. $(Y_j^0)_{j=1}^{n_0}$ and $(Y_j^1)_{j=1}^{n_1}$ and order them in an increasing fashion.
 		\item Let $N_0 = \lceil \frac{n_0}{n} N \rceil$, $N_1 = N - N_0$ and include 
@@ -178,14 +178,14 @@ The proposed algorithm consists of four main steps:
 	\end{enumerate}
 	Thus, we end up with a population $(Y_j, D_j)_{j=1}^N$, where the pairs of values are drawn from the sample according to the rule above.
 	
-	\item \textbf{Imputing missing potential values:} The next step is imputing the missing potential outcomes. That is, for treated units we want an estimate of $Y_i(0)$ and for untreated units of $Y_i(1)$. As already discussed above, we simply use \ref{imputation1} and \ref{imputation2}, where $\widehat{F}_0$ and $\widehat{F}_1$ are the empirical distribution functions estimated from the untreated and treated units respectively.
+	\item \textit{Imputing missing potential values:} The next step is imputing the missing potential outcomes. That is, for treated units we want an estimate of $Y_i(0)$ and for untreated units of $Y_i(1)$. As already discussed above, we simply use \ref{imputation1} and \ref{imputation2}, where $\widehat{F}_0$ and $\widehat{F}_1$ are the empirical distribution functions estimated from the untreated and treated units respectively.
 	
-	\item \textbf{Resampling}: For each bootstrap replication $b = 1,\ldots, B$, $n$ pairs of ($Y_{ib}^*(0), Y_{ib}^*(1)$) are randomly drawn from the generated population. In the drawn bootstrap sample, treatment is randomly assigned with probability $p:= \mathbb{P}(D_i = 1 | R_i = 1)$, that is the probability of treatment in the actual sample. Then, we can compute the bootstrap sample estimators $\widehat{\tau}_b^*$ and $\widehat{\sigma}_b^*$, and record the t-ratio
+	\item \textit{Resampling}: For each bootstrap replication $b = 1,\ldots, B$, $n$ pairs of ($Y_{ib}^*(0), Y_{ib}^*(1)$) are randomly drawn from the generated population. In the drawn bootstrap sample, treatment is randomly assigned with probability $p:= \mathbb{P}(D_i = 1 | R_i = 1)$, that is the probability of treatment in the actual sample. Then, we can compute the bootstrap sample estimators $\widehat{\tau}_b^*$ and $\widehat{\sigma}_b^*$, and record the t-ratio
 	$$
 	T_b^* = \frac{\widehat{\tau}_b^* - \widehat{\tau}}{\widehat{\sigma}_b^* / \sqrt{n}}.
 	$$
 	
-	\item \textbf{Confidence intervals:} Let $\widehat{G}(t) = \frac{1}{B} \sum_{i=1}^{B} \ind\{T_b^* \leq t\}$ be the empirical distribution function of the t-ratios obtained through resampling. Confidence intervals can then be constructed as 
+	\item \textit{Confidence intervals:} Let $\widehat{G}(t) = \frac{1}{B} \sum_{i=1}^{B} \ind\{T_b^* \leq t\}$ be the empirical distribution function of the t-ratios obtained through resampling. Confidence intervals can then be constructed as 
 	\begin{align} \label{CI}
 		CI(1-\alpha) = \left[ \widehat{\tau} - \frac{\widehat{\sigma}}{\sqrt{n}} \widehat{G}^{-1}(1-\alpha); \widehat{\tau} - \frac{\widehat{\sigma}}{\sqrt{n}} \widehat{G}^{-1}(\alpha)  \right],
 	\end{align}
@@ -253,7 +253,7 @@ This result follows from the previous results and the definition of the variance
 
 \section{Application to marriage market incentives} \label{application}
 
-In this section I apply the method outlined above to experimental data by \cite{Bursztyn_2017}. 
+In this section I apply the method outlined above to experimental data by \cite{Bursztyn_2017}. Experimental data is convenient since the randomization assumption can be guaranteed to hold. This is rarely the case for observational data. 
 
 Men tend to favor romantic partners who are less ambitious than themselves. This creates a trade-off for women in the labor market: Actions that lead to professional success may lead to misfortune in the marriage market. Thus, single women may be more cautious about signaling professional ambition than their married counterparts. \cite{Bursztyn_2017} test this hypothesis in an experiment.
 
@@ -321,7 +321,11 @@ However, some doubts remain. First of all, the sample for the group of interest 
 \end{table}
 
 
+\section{Conclusion} \label{Conclusion}
 
+The causal bootstrap by \cite{Imbens_2021} is a powerful alternative to the classical bootstrap for situations where one is interested in inference on causal parameters. It provides asymptotically valid confidence intervals under randomized treatment assignment. This paper focuses on two-sided inference for the ATE and presents the bootstrap procedure for such settings.
+
+As an illustrative example, the procedure is then applied to experimental data by \cite{Bursztyn_2017}. I find that single women display less professional ambition when their preferences are observed by their peers. Unlike \cite{Bursztyn_2017} I find no significant effect for desired hours of weekly work. 
 
 
 %========= Appendix ==========
