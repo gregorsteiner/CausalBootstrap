@@ -73,7 +73,7 @@ This is applied to the problem of marriage market incentives. I find evidence th
 
 The bootstrap was originally proposed by \cite{Efron_1982} and is frequently used in situations where standard parametric inference is difficult or even impossible. \cite{Imbens_2021} suggest a modified version of the bootstrap for causal inference problems.
 
-In causal inference, there are generally two sources of uncertainty: sampling uncertainty and design uncertainty. Sampling uncertainty stems from the stochastic nature of the sampling process, while design uncertainty refers to the stochastic nature of the treatment assignment. The latter is somewhat unique to situations where the interest lies on the causal effect and is not present in classical statistics. That is why the classical bootstrap needs to be modified in order to account for both sources of uncertainty.
+In causal inference, there are generally two sources of uncertainty: sampling uncertainty and design uncertainty. Sampling uncertainty stems from the stochastic nature of the sampling process, while design uncertainty refers to the stochastic nature of the treatment assignment. The latter is somewhat unique to situations where the interest lies on the causal effect of some treatment and is not present in classical statistics. That is why the classical bootstrap needs to be modified in order to account for both sources of uncertainty.
 
 In this paper, constructing confidence intervals for the Average Treatment Effect (ATE) based on \cite{Imbens_2021} is extensively discussed. As an illustrative example, I then apply the method to marriage market incentives: Men tend to favor less ambitious romantic partners. This creates a trade-off for women: Actions that lead to professional success may lead to failure in the marriage market. Utilizing data by \cite{Bursztyn_2017}, I test whether women are more cautious about signaling professional ambition when potential partners observe their preferences.
 
@@ -294,7 +294,7 @@ Table \ref{mean values} shows the mean values by group and treatment. To be cons
 
 \subsection{Bootstrapping confidence intervals}
 
-The next step is using the bootstrap procedure to construct confidence intervals for the ATE based on the difference in means estimator. In particular, I want to focus on desired compensation and hours of work among single women, since a significant effect for this group would confirm the hypothesis discussed by \cite{Bursztyn_2017}. To the best of my knowledge, no R implementation for the causal bootstrap by \cite{Imbens_2021} exists. That is why I write my own function for the bootstrap procedure. The code will be available in the appendix.
+The next step is using the bootstrap procedure to construct confidence intervals for the ATE based on the difference in means estimator. In particular, I want to focus on desired compensation and hours of work among single women, since a significant effect for this group would confirm the hypothesis discussed by \cite{Bursztyn_2017}. To the best of my knowledge, no R implementation for the causal bootstrap by \cite{Imbens_2021} exists. That is why I write my own function for the bootstrap procedure. The code is available on my \href{https://github.com/gregorsteiner/CausalBootstrap}{Github}.
 
 It is important to consider what population we generalize to, that is what $N$ is in this case. It seems reasonable to take all single females in the US who are close in age to the students studied by \cite{Bursztyn_2017}. According to the 2010 census, the female population in the age range 20-29 is about 21 million\footnote{More information is available at the \href{https://www.census.gov/data/tables/time-series/demo/popest/2010s-national-detail.html}{Census website}}. Unfortunately, information on marital status is not available. Using the proportion of singles in our sample, yields about 9.95 million single women in the population.
 
@@ -325,7 +325,7 @@ However, some doubts remain. First of all, the sample for the group of interest 
 
 The causal bootstrap by \cite{Imbens_2021} is a powerful alternative to the classical bootstrap for situations where one is interested in inference on causal parameters. It provides asymptotically valid confidence intervals under randomized treatment assignment. This paper focuses on two-sided inference for the ATE and presents the bootstrap procedure for such settings.
 
-As an illustrative example, the procedure is then applied to experimental data by \cite{Bursztyn_2017}. I find that single women display less professional ambition when their preferences are observed by their peers. Unlike \cite{Bursztyn_2017} I find no significant effect for desired hours of weekly work. 
+As an illustrative example, the procedure is then applied to experimental data by \cite{Bursztyn_2017}. I find that single women display less professional ambition when their preferences are observed by their peers. In particular, they decrease their desired compensation significantly when they think their answers may be observable. Unlike \cite{Bursztyn_2017} I find no significant effect for desired hours of weekly work. 
 
 
 %========= Appendix ==========
