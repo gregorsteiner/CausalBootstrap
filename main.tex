@@ -267,7 +267,31 @@ The heart of the questionnaire is a series of questions about their desired comp
 
 \subsection{Data}
 
-\cite{Bursztyn_2017} make their data available for replication purposes. In total, the sample includes 354 students, 60 of which are female and single. We refer to the public version of the questionnaire as treatment (i.e. $D_i = 1$ if student $i$ received the public version), while the students who received the private version act as the control group. Out of the 60 single women, 29 received the treatment.
+\cite{Bursztyn_2017} make their data available for replication purposes. Table \ref{SumStats} shows summary statistics for the variables of interest. In total, the sample includes 354 students, 346 of which provided information on their sex and marital status. Out of those 346, 60 students are female and single.
+
+We refer to the public version of the questionnaire as treatment (i.e. $D_i = 1$ if student $i$ received the public version), while the students who received the private version act as the control group. Out of the 60 single women, 29 received the treatment.
+
+\begin{table}[!htbp] \centering \renewcommand*{\arraystretch}{1.1}\caption{Summary Statistics}\label{SumStats}\resizebox{\textwidth}{!}{
+		\begin{tabular}{lrrrrrrr}
+			\hline
+			Variable & N & Mean & Std. Dev. & Min & Pctl. 25 & Pctl. 75 & Max \\ 
+			\hline
+			treatment & 354 &  &  &  &  &  &  \\ 
+			... Private & 176 & 49.7\% &  &  &  &  &  \\ 
+			... Public & 178 & 50.3\% &  &  &  &  &  \\ 
+			male & 354 & 0.681 & 0.467 & 0 & 0 & 1 & 1 \\ 
+			single & 346 & 0.474 & 0.5 & 0 & 0 & 1 & 1 \\ 
+			class & 346 &  &  &  &  &  &  \\ 
+			... Female \& Non-single & 51 & 14.7\% &  &  &  &  &  \\ 
+			... Female \& Single & 60 & 17.3\% &  &  &  &  &  \\ 
+			... Male \& Non-single & 131 & 37.9\% &  &  &  &  &  \\ 
+			... Male \& Single & 104 & 30.1\% &  &  &  &  &  \\ 
+			compensation & 353 & 136.494 & 33.856 & 75 & 112.5 & 162.5 & 250 \\ 
+			hours & 353 & 51.66 & 8.779 & 40 & 45.5 & 55.5 & 80\\ 
+			\hline
+		\end{tabular}
+	}
+\end{table}
 
 To draw conclusions about the effect of observability on professional ambition, we focus on desired compensation and hours of work per week. The respective questions on the questionnaire are \textit{What is your desired level of compensation?} and \textit{How many hours per week are you willing to work on a regular basis?} Many students provided their answers as a range, e.g. 175-200 (in thousand USD) or 50-55 hours. Such answers are transformed by taking the mean of the range.
 
@@ -277,9 +301,9 @@ Table \ref{mean values} shows the mean values by group and treatment. To be cons
 	\centering
 	\caption{Mean values for desired compensation and hours by type and treatment}
 	\label{mean values}
-	\begin{tabular}{l|r|r|r|r|r|r|}
+	\begin{tabular}{l|r|r|r|r|r|r}
 		\hline
-		& \multicolumn{3}{c|}{Compensation} & \multicolumn{3}{|c|}{Hours} \\
+		& \multicolumn{3}{c|}{Compensation} & \multicolumn{3}{|c}{Hours} \\
 		\hline
 		& Private & Public & Difference & Private & Public & Difference \\
 		\hline
@@ -296,36 +320,42 @@ Table \ref{mean values} shows the mean values by group and treatment. To be cons
 
 The next step is using the bootstrap procedure to construct confidence intervals for the ATE based on the difference in means estimator. In particular, I want to focus on desired compensation and hours of work among single women, since a significant effect for this group would confirm the hypothesis discussed by \cite{Bursztyn_2017}. To the best of my knowledge, no R implementation for the causal bootstrap by \cite{Imbens_2021} exists. That is why I write my own function for the bootstrap procedure. The code is available on my \href{https://github.com/gregorsteiner/CausalBootstrap}{Github}.
 
-It is important to consider what population we generalize to, that is what $N$ is in this case. It seems reasonable to take all single females in the US who are close in age to the students studied by \cite{Bursztyn_2017}. According to the 2010 census, the female population in the age range 20-29 is about 21 million\footnote{More information is available at the \href{https://www.census.gov/data/tables/time-series/demo/popest/2010s-national-detail.html}{Census website}}. Unfortunately, information on marital status is not available. Using the proportion of singles in our sample, yields about 9.95 million single women in the population.
+It is important to consider what population we generalize to, that is what $N$ is in this case. It seems reasonable to take all single females in the US who are close in age to the students studied by \cite{Bursztyn_2017}. According to the 2010 census, the female population in the age range 20-29 is about 21 million\footnote{Population size by sex for selected age groups is available at the \href{https://www.census.gov/data/tables/time-series/demo/popest/2010s-national-detail.html}{Census website}.}. Unfortunately, information on marital status is not available. Using the proportion of singles in our sample, yields about 9.95 million single women in the population. Population sizes for the other three classes can be obtained analogously.
 
-Table \ref{CIs} shows the estimated 95\% confidence intervals. For desired compensation, the upper bound is well below zero. This indicates a significant average effect of the treatment. On average, the students demand between USD 2,500 and USD 29,000 less in compensation if they received the public version of the questionnaire. This makes the magnitude of the effect economically very relevant. However, for the desired number of weekly work hours, the confidence interval includes zero. There seems to be no significant effect for the desired hours of weekly work.
+Table \ref{CIs} shows the estimated 95\% confidence intervals for all four classes. For desired compensation among single females, the upper bound is well below zero. This indicates a significant average effect of the treatment\footnote{I refer to the effect as significant if the confidence interval does not include zero. This means that an inverted test used to obtain the confidence interval would reject the null hypothesis of a zero effect.}. On average, the students demand between USD 2,600 and USD 26,000 less in compensation if they received the public version of the questionnaire. This makes the magnitude of the effect economically very relevant. However, for the desired number of weekly work hours, the confidence interval includes zero. There seems to be no significant effect for the desired hours of weekly work. Surprisingly, the upper bound of the non-single females is below zero, indicating a significant ATE for that group. In the male classes, there are no significant effects.
+
+\begin{table}
+	\centering
+	\caption{95\% Confidence Intervals for the ATE}
+	\label{CIs}
+	\begin{tabular}{l|r|r|r|r}
+		\hline
+		& \multicolumn{2}{c|}{Compensation} & \multicolumn{2}{|c}{Hours} \\
+		\hline
+		& Lower Bound & Upper Bound & Lower Bound & Upper Bound\\
+		\hline
+		Female \& Non-single & -12.97 & 12.45 & -5.28 & -0.28\\
+		\hline
+		Female \& Single & -25.77 & -2.63 & -4.28 & 2.72\\
+		\hline
+		Male \& Non-single & -16.59 & 4.03 & -4.24 & 1.47\\
+		\hline
+		Male \& Single & -11.95 & 10.28 & -4.22 & 1.62\\
+		\hline
+	\end{tabular}
+\end{table}
 
 Thus, I can only partially confirm the results obtained by \cite{Bursztyn_2017}. They also obtain a significant effect for hours of work. However, they use standard errors from regressing hours on treatment. This is conceptually different from what is done here. While the causal bootstrap also accounts for design uncertainty, their approach only accounts for sampling uncertainty.
 
 However, some doubts remain. First of all, the sample for the group of interest (female \& single) contains only 60 observations. This is a rather small sample. Also, it is doubtful whether elite MBA students are really representative of the general population. In many dimensions they likely are not. At the very least, they are not a random sample from the population, which violates the random sampling assumption. Thus, these results should be taken with a grain of salt. 
 
 
-\begin{table}
-	\centering
-	\caption{95\% Confidence Intervals for the ATE among single women}
-	\label{CIs}
-	\begin{tabular}{l|r|r}
-		\hline
-		& Lower Bound & Upper Bound\\
-		\hline
-		Compensation & -29.26 & -2.51\\
-		\hline
-		Hours & -4.15 & 2.07\\
-		\hline
-	\end{tabular}
-\end{table}
-
 
 \section{Conclusion} \label{Conclusion}
 
 The causal bootstrap by \cite{Imbens_2021} is a powerful alternative to the classical bootstrap for situations where one is interested in inference on causal parameters. It provides asymptotically valid confidence intervals under randomized treatment assignment. This paper focuses on two-sided inference for the ATE and presents the bootstrap procedure for such settings.
 
-As an illustrative example, the procedure is then applied to experimental data by \cite{Bursztyn_2017}. I find that single women display less professional ambition when their preferences are observed by their peers. In particular, they decrease their desired compensation significantly when they think their answers may be observable. Unlike \cite{Bursztyn_2017} I find no significant effect for desired hours of weekly work. 
+As an illustrative example, the procedure is then applied to experimental data by \cite{Bursztyn_2017}. I find some evidence for the hypothesis that single women display less professional ambition when their preferences are observed by their peers. In particular, they decrease their desired compensation significantly when they think their answers may be observable. Unlike \cite{Bursztyn_2017} I find no significant effect for desired hours of weekly work. 
 
 
 %========= Appendix ==========

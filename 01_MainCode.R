@@ -43,6 +43,10 @@ dat <- within(dat, {
 
 ######### Tables & Plots #########
 
+# summary table
+vtable::sumtable(dat[, c("treatment", "male", "single", "class", "compensation", "hours")],
+                 out = "latex")
+
 
 # compute compensation and hours by class and estimate the ATE
 Results <- do.call(cbind, lapply(dat[, c("compensation", "hours")], function(x){
@@ -57,32 +61,34 @@ knitr::kable(Results, format = "latex", digits = 2)
 
 
 
-
 ######### Bootstrap #########
 
 
-
-# focus on single females
-dat.female.single <- dat[dat$class == "Female & Single", ]
-#dat.female.single <- dat.female.single[complete.cases(dat.female.single), ]
-
-# population size
-N <- round(mean(dat$maritalstatus == 0, na.rm = TRUE) * 21000000) # population size
+# population sizes
+p.single <- mean(dat$maritalstatus == 0, na.rm = TRUE)
+pop.sizes <- c(c(1-p.single, p.single) * 21000000, c(1-p.single, p.single) * 21500000)
 
 # bootstrap CIs for compensation and hours worked
 set.seed(1) # set seed such that results are reproducible
-Boot.CIs <- do.call(rbind, lapply(c("compensation", "hours"), function(out){
-  # compute CIs
-  boot <- causal_boot(dat.female.single, dep.var = out, treatment = "treatnum", N = N)
-  
-  # combine table with CIs and point estimate
-  res <- as.numeric(c("Lower Bound" = boot[["Confidence Interval"]]["Lower"],
-                      "Upper Bound" = boot[["Confidence Interval"]]["Upper"]))
-  return(res)
-}))
 
-colnames(Boot.CIs) <- c("Lower Bound", "Upper Bound")
-rownames(Boot.CIs) <- c("Compensation", "Hours")
+# loop over classes
+Boot.CIs <- t(mapply(function(class, pop.size){
+  # select class
+  data <- dat[dat$class == class, ]
+  
+  sapply(c("compensation", "hours"), function(out){
+    # compute CIs
+    boot <- causal_boot(data, dep.var = out, treatment = "treatnum", N = pop.size)
+    
+    # combine table with CIs and point estimate
+    res <- as.numeric(c("Lower Bound" = boot[["Confidence Interval"]]["Lower"],
+                        "Upper Bound" = boot[["Confidence Interval"]]["Upper"]))
+    return(res)
+  })
+  
+}, levels(dat$class), pop.sizes))
+
+colnames(Boot.CIs) <- rep(c("Lower Bound", "Upper Bound"), 2)
 
 # export as tex table
 knitr::kable(Boot.CIs, format = "latex", digits = 2)
