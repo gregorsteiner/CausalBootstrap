@@ -204,7 +204,7 @@ This section provides a characterization of the asymptotic behavior of the boots
 \begin{proof}
 	By Glivenko-Cantelli, $\widehat{F}_0(y_0)$ and $\widehat{F}_1(y_1)$ converge almost surely to the true distribution functions, $F_0(y_0)$ and $F_1(y_1)$. This implies convergence in probability and therefore consistency.
 	
-	Recall that $\tau$ and $\sigma$ are functions of the marginal distribution functions, so they can be written as $\tau(F_0(y_0), F_1(y_1))$ and $\sigma(F_0(y_0), F_1(y_1))$. Under the assumption that the first four moments of $F_0(y_0)$ and $F_1(y_1)$ are bounded, they are  even continous functions of $F_0(y_0)$ and $F_1(y_1)$. Thus, by the continous mapping theorem, the estimators converge in probability to the true parameters (or parameter bounds),
+	Recall that $\tau$ and $\sigma$ are functions of the marginal distribution functions, so they can be written as $\tau(F_0(y_0), F_1(y_1))$ and $\sigma(F_0(y_0), F_1(y_1))$. Under the assumption that the first four moments of $F_0(y_0)$ and $F_1(y_1)$ are bounded, they are  even continous functions of $F_0(y_0)$ and $F_1(y_1)$ \citep[see][section 5.1]{Imbens_2021}. Thus, by the continous mapping theorem, the estimators converge in probability to the true parameters (or parameter bounds),
 	$$
 	\widehat{\tau}(\widehat{F}_0(y_0), \widehat{F}_1(y_1)) \overset{p}{\to} \tau(F_0(y_0), F_1(y_1))
 	$$
