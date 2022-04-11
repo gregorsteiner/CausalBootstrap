@@ -83,7 +83,7 @@ Section \ref{setting} introduces the setting and some notation, section \ref{boo
 
 \section{Setting} \label{setting}
 
-This paper focuses on situations of the following form: A population of units $i = 1,\ldots, N$ is either exposed to a treatment (treatment group) or not (control group), and we are interested in the causal effect of said treatment. That is, we observe an outcome $Y_i$ and a binary variable $D_i \in \{0, 1\}$ indicating treatment for $i = 1,\ldots, N$, and we are interested in the causal effect of $D$ on $Y$. Often, only a sample of size $n < N$ is observed, that is we only observe $(Y_i, D_i)$ for $i = 1,\ldots, n$.
+This paper focuses on situations of the following form: A sample of $n$ units is either exposed to a treatment (treatment group) or not (control group), and we are interested in the causal effect of said treatment for the entire population of $N \geq n$ units. That is, we observe an outcome $Y_i$ and a binary variable $D_i \in \{0, 1\}$ indicating treatment for $i = 1,\ldots, n$. In such situations we face two types of uncertainty: sampling and design uncertainty. Sampling uncertainty stems from the fact that we only observe $n \leq N$ units, while design uncertainty refers to the stochastic nature of treatment assignment.
 
 Using Rubin's potential outcome framework \citep{Rubin_2005}, we denote the outcome as $Y(1)$ if treated and as $Y(0)$ otherwise. The actual outcome $Y_i$ is simply
 $$
@@ -97,7 +97,7 @@ For some unit $i$ the unit-causal effect is $Y_i(1) - Y_i(0)$, but only one of t
 $$
 \tau := ATE = \frac{1}{N} \sum_{i = 1}^{N} Y_i(1) - Y_i(0).
 $$
-Let $n_0, n_1$ denote the number of untreated and treated units respectively in a sample of $n = n_0 + n_1$ observations and let $R_i \in \{0, 1\}$ be an indicator whether the i-th population unit is included in the sample. Then the standard estimator for $\tau$ is
+Let $n_0, n_1$ denote the number of untreated and treated units respectively in a sample of $n = n_0 + n_1$ observations and let $R_i \in \{0, 1\}$ be an indicator whether the i-th population unit is included in the sample. Then the standard difference in means estimator for $\tau$ is
 $$
 \widehat{\tau} = \frac{1}{n_1} \sum_{i = 1}^{N} R_i D_i Y_i - \frac{1}{n_0} \sum_{i = 1}^{N} R_i (1 - D_i) Y_i = \bar{Y}_1 - \bar{Y}_0.
 $$
@@ -324,7 +324,7 @@ It is important to consider what population we generalize to, that is what $N$ i
 
 Table \ref{CIs} shows the estimated 95\% confidence intervals for all four classes. For desired compensation among single females, the upper bound is well below zero. This indicates a significant average effect of the treatment\footnote{I refer to the effect as significant if the confidence interval does not include zero. This means that an inverted test used to obtain the confidence interval would reject the null hypothesis of a zero effect.}. On average, the students demand between USD 2,600 and USD 26,000 less in compensation if they received the public version of the questionnaire. This makes the magnitude of the effect economically very relevant. However, for the desired number of weekly work hours, the confidence interval includes zero. There seems to be no significant effect for the desired hours of weekly work. Surprisingly, the upper bound of the non-single females is below zero, indicating a significant ATE for that group. In the male classes, there are no significant effects.
 
-\begin{table}
+\begin{table}[!h]
 	\centering
 	\caption{95\% Confidence Intervals for the ATE}
 	\label{CIs}
