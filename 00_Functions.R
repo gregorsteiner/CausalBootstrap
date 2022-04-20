@@ -82,14 +82,17 @@ causal_boot <- function(data, dep.var, treatment, N, B = 100, alpha = 0.05){
       M <- ceiling(i / n.int * N.int) - ceiling((i - 1) / n.int * N.int)
       
       # assign
-      if(i == 1) store <- cbind(Y = rep(dat[i, "Y"], M), D = rep(dat[i, "D"], M))
+      if(i == 1) store <- cbind(Y = rep(dat[i, "Y"], M),
+                                D = rep(dat[i, "D"], M))
       
       else{
         # try to generate replications, if an error occurs, we simply skip this one
         append <- cbind(Y = rep(dat[i, "Y"], M), D = rep(dat[i, "D"], M))
         
         # if the append object is a numeric matrix, we add it to the store object
-        if(is.matrix(append) & is.numeric(append)) store <- rbind(store, append)
+        if(is.matrix(append) & is.numeric(append)){
+          store <- rbind(store, append)
+        } 
       }
       
     }
@@ -107,8 +110,12 @@ causal_boot <- function(data, dep.var, treatment, N, B = 100, alpha = 0.05){
   
   # impute missing potential outcomes
   dat.boot <- cbind(dat.boot,
-                    "Y0" = ifelse(dat.boot[, "D"] == 0, dat.boot[, "Y"], quantile(F0, F1(dat.boot[, "Y"]))), 
-                    "Y1" = ifelse(dat.boot[, "D"] == 1, dat.boot[, "Y"], quantile(F1, F0(dat.boot[, "Y"]))))
+                    "Y0" = ifelse(dat.boot[, "D"] == 0,
+                                  dat.boot[, "Y"],
+                                  quantile(F0, F1(dat.boot[, "Y"]))), 
+                    "Y1" = ifelse(dat.boot[, "D"] == 1,
+                                  dat.boot[, "Y"],
+                                  quantile(F1, F0(dat.boot[, "Y"]))))
   
   T.store <- numeric(B)
   
@@ -118,18 +125,22 @@ causal_boot <- function(data, dep.var, treatment, N, B = 100, alpha = 0.05){
     
     
     # randomly assign treatment (TRUE is treatment)
-    Treat <- sample(c(FALSE, TRUE), size = n, replace = TRUE, prob = c(1 - p, p))
+    Treat <- sample(c(FALSE, TRUE), size = n,
+                    replace = TRUE, prob = c(1 - p, p))
     # add to df
     dat.boot.it <- cbind(dat.boot.it,
                          "Treat.Boot" = as.numeric(Treat),
-                         "Y.Boot" = ifelse(Treat, dat.boot.it[, "Y1"], dat.boot.it[, "Y0"]))
+                         "Y.Boot" = ifelse(Treat,
+                                           dat.boot.it[, "Y1"],
+                                           dat.boot.it[, "Y0"]))
     
     # sample sizes
     n1.boot <- sum(Treat)
     n0.boot <- n - n1.boot
     
     # compute bootstrap sample statistics
-    tau.hat.boot <- mean(dat.boot.it[Treat, "Y.Boot"]) - mean(dat.boot.it[!Treat, "Y.Boot"])
+    tau.hat.boot <- mean(dat.boot.it[Treat, "Y.Boot"]) - 
+      mean(dat.boot.it[!Treat, "Y.Boot"])
     sigma.hat.boot <- sqrt(Var_AGL(Y = dat.boot.it[, "Y.Boot"],
                                    D = dat.boot.it[, "Treat.Boot"],
                                    n0 = n0.boot, n1 = n1.boot, N = N))

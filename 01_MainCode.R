@@ -30,9 +30,12 @@ dat <- within(dat, {
   treatnum <- as.numeric(treatment == "Public")
   
   # create continous compensation and hours worked variables
-  compensation <- sapply(regmatches(desiredcompensation, gregexpr("?[0-9]+[.]?[0-9]*", desiredcompensation)),
+  compensation <- sapply(regmatches(desiredcompensation, 
+                                    gregexpr("?[0-9]+[.]?[0-9]*",
+                                             desiredcompensation)),
                          function(x) mean(as.numeric(x)))
-  hours <- sapply(regmatches(hourswork, gregexpr("?[0-9]+[.]?[0-9]*", hourswork)),
+  hours <- sapply(regmatches(hourswork,
+                             gregexpr("?[0-9]+[.]?[0-9]*", hourswork)),
                   function(x) mean(as.numeric(x)))
   
   
@@ -44,12 +47,14 @@ dat <- within(dat, {
 ######### Tables & Plots #########
 
 # summary table
-vtable::sumtable(dat[, c("treatment", "male", "single", "class", "compensation", "hours")],
+vtable::sumtable(dat[, c("treatment", "male", "single",
+                         "class", "compensation", "hours")],
                  out = "latex")
 
 
 # compute compensation and hours by class and estimate the ATE
-Results <- do.call(cbind, lapply(dat[, c("compensation", "hours")], function(x){
+Results <- do.call(cbind, lapply(dat[, c("compensation", "hours")],
+                                 function(x){
   mat <- tapply(x, list(dat$class, dat$treatment), mean, na.rm = TRUE)
   mat <- cbind(mat, "Difference" = mat[, "Public"]- mat[, "Private"])
   mat
@@ -66,7 +71,8 @@ knitr::kable(Results, format = "latex", digits = 2)
 
 # population sizes
 p.single <- mean(dat$maritalstatus == 0, na.rm = TRUE)
-pop.sizes <- c(c(1-p.single, p.single) * 21000000, c(1-p.single, p.single) * 21500000)
+pop.sizes <- c(c(1-p.single, p.single) * 21000000,
+               c(1-p.single, p.single) * 21500000)
 
 # bootstrap CIs for compensation and hours worked
 set.seed(1) # set seed such that results are reproducible
@@ -78,7 +84,8 @@ Boot.CIs <- t(mapply(function(class, pop.size){
   
   sapply(c("compensation", "hours"), function(out){
     # compute CIs
-    boot <- causal_boot(data, dep.var = out, treatment = "treatnum", N = pop.size)
+    boot <- causal_boot(data, dep.var = out,
+                        treatment = "treatnum", N = pop.size)
     
     # combine table with CIs and point estimate
     res <- as.numeric(c("Lower Bound" = boot[["Confidence Interval"]]["Lower"],
