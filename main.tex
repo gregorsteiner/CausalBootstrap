@@ -319,7 +319,7 @@ Table \ref{mean values} shows the mean values by group and treatment. To be cons
 
 \subsection{Bootstrapping confidence intervals}
 
-The next step is using the bootstrap procedure to construct confidence intervals for the ATE based on the difference in means estimator. In particular, I want to focus on desired compensation and hours of work among single women, since a significant effect for this group would confirm the hypothesis discussed by \cite{Bursztyn_2017}. To the best of my knowledge, no R implementation for the causal bootstrap by \cite{Imbens_2021} exists. That is why I write my own function for the bootstrap procedure. The code is available on my \href{https://github.com/gregorsteiner/CausalBootstrap}{Github}.
+The next step is using the bootstrap procedure to construct confidence intervals for the ATE based on the difference in means estimator. In particular, I want to focus on desired compensation and hours of work among single women, since a significant effect for this group would confirm the hypothesis discussed by \cite{Bursztyn_2017}. To the best of my knowledge, no R implementation for the causal bootstrap by \cite{Imbens_2021} exists. That is why I write my own function for the bootstrap procedure. The code is available in the Appendix \ref{Code}. Alternatively, the code is also available in a more structured form on my \href{https://github.com/gregorsteiner/CausalBootstrap}{Github}.
 
 It is important to consider what population we generalize to, that is what $N$ is in this case. It seems reasonable to take all single females in the US who are close in age to the students studied by \cite{Bursztyn_2017}. According to the 2010 census, the female population in the age range 20-29 is about 21 million\footnote{Population size by sex for selected age groups is available at the \href{https://www.census.gov/data/tables/time-series/demo/popest/2010s-national-detail.html}{Census website}.}. Unfortunately, information on marital status is not available. Using the proportion of singles in our sample, yields about 9.95 million single women in the population. Population sizes for the other three classes can be obtained analogously.
 
@@ -364,9 +364,9 @@ As an illustrative example, the procedure is then applied to experimental data b
 \newpage
 
 \appendix
-\section{Code}
+\section{Code} \label{Code}
 
-\begin{lstlisting}[language=R, basicstyle=\tiny]
+\begin{lstlisting}[language=R, basicstyle=\tiny\tiny]
 	######### Functions ######### 
 		
 	# function provided by Aronow, Green & Lee (2014)
