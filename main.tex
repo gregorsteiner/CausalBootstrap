@@ -73,9 +73,9 @@ This is applied to the problem of marriage market incentives. I find evidence th
 
 The bootstrap was originally proposed by \cite{Efron_1982} and is frequently used in situations where standard parametric inference is difficult or even impossible. \cite{Imbens_2021} suggest a modified version of the bootstrap for causal inference problems.
 
-Causal inference from a statistical perspective is concerned with measuring the effects of causes \citep{Holland_1986}. This is distinct from associational inference. Causal relationships cannot be inferred from associations alone. The reason is that the association may derive from a confounding third variable. Or alternatively, an association arises by reverse causation, i.e. the causality runs in the other direction.
+Causal inference from a statistical perspective is concerned with measuring the effects of causes \citep{Holland_1986}. In this specific case, we are concerned with situations where units from a population either receive some treatment or they do not. The treatment is the cause and the aim is to measure the effect of said cause. For example, the treatment might be a drug whose effect on certain health parameters we want to measure. 
 
-In this paper, constructing confidence intervals for the Average Treatment Effect (ATE) based on \cite{Imbens_2021} is extensively discussed. The ATE is a measure of the average effect of some treatment on some outcome of interest. For example, when testing a medical drug against high blood pressure, we would be interested in the average reduction in blood pressure after taking the drug. Similarly, the ATE is an important causal parameter in many applications.
+In this paper, constructing confidence intervals for the Average Treatment Effect (ATE) based on \cite{Imbens_2021} is extensively discussed. The ATE is a measure of the average effect of some treatment on some outcome of interest. Again, a medical example: When testing a medical drug against high blood pressure, we would be interested in the average reduction in blood pressure after taking the drug, which is exactly the ATE.
 
 As an illustrative example, I then apply the method to marriage market incentives: Men tend to favor less ambitious romantic partners. This creates a trade-off for women: Actions that lead to professional success may lead to failure in the marriage market. Utilizing data by \cite{Bursztyn_2017}, I test whether women are more cautious about signaling professional ambition when potential partners observe their preferences.
 
@@ -85,7 +85,7 @@ Section \ref{setting} introduces the setting and some notation, Section \ref{boo
 
 \section{Setting} \label{setting}
 
-This paper focuses on situations of the following form: A sample of $n$ units is either exposed to a treatment (treatment group) or not (control group), and we are interested in the causal effect of said treatment for the entire population of $N \geq n$ units. That is, we observe an outcome $Y_i$ and a binary variable $D_i \in \{0, 1\}$ (the treatment) for $i = 1,\ldots, n$. $D_i$ indicates treatment for unit $i$ and takes on the value $1$ if unit $i$ is treated, and $0$ else.
+This paper focuses on situations of the following form: A sample of $n$ units is either exposed to a treatment (treatment group) or not (control group), and we are interested in the causal effect of said treatment for the entire population of $N \geq n$ units. More specifically, we observe an outcome $Y_i$ and a binary variable $D_i \in \{0, 1\}$ (the treatment) for $i = 1,\ldots, n$. $D_i$ indicates treatment for unit $i$ and takes on the value $1$ if unit $i$ is treated, and $0$ else.
 
 In such situations we face two types of uncertainty: sampling and design uncertainty. Sampling uncertainty stems from the fact that we only observe $n \leq N$ units, while design uncertainty refers to the stochastic nature of treatment assignment. A short example will help to clarify this difference: Assume a pharmaceutical company wants to test their drug in a randomized trial. They randomly select patients to participate in this experiment. Among the chosen patients they randomly assign treatment, that is half of them are treated at random and the other half acts as control group. Now there are two sources of uncertainty: They could have chosen different patients to participate (sampling uncertainty) and they could have assigned treatment differently among the chosen patients (design uncertainty). The second choice (assigning treatment) is somewhat unique to causal inference settings.
 
@@ -96,10 +96,11 @@ Y_i = D_i Y_i(1) + (1-D_i) Y_i(0) = \begin{cases}
 	Y_i(0), & D_i = 0.
 \end{cases}
 $$
+It is assumed, that the potential outcomes $\big(Y_i(0), Y_i(1)\big)$ for unit $i$ are independent of the treatment status of other units. This is commonly called the Stable Unit Treatment Value Assumption (SUTVA).
 
 For some unit $i$ the unit-causal effect is $Y_i(1) - Y_i(0)$, but only one of these is actually observed. Therefore, the unit-causal effect cannot be identified. \cite{Holland_1986} calls this the fundamental problem of causal inference.
 
-However, we can estimate the Average Treatment Effect (ATE), that is the average difference between outcomes in the treated and untreated state,
+However, we can identify the Average Treatment Effect (ATE), which is the average difference between outcomes in the treated and untreated state,
 $$
 \tau := ATE = \frac{1}{N} \sum_{i = 1}^{N} \big( Y_i(1) - Y_i(0) \big).
 $$
@@ -187,7 +188,7 @@ The proposed algorithm consists of four main steps:
 		$$M_j^1 := \lceil \frac{j}{n_1} N_1 \rceil - \lceil \frac{j-1}{n_1} N_1 \rceil$$
 		copies of $Y_j^1$ with $D_j = 1$ for $j = 1, \ldots, n_1$.
 	\end{enumerate}
-	Thus, we end up with a population $(Y_j, D_j)_{j=1}^N$, where the pairs of values are drawn from the sample according to the rule above.
+	Thus, we end up with a population $(Y_j, D_j)_{j=1}^N$, where the pairs of values are drawn from the sample according to the rule above. 
 	
 	\item \textit{Imputing missing potential values:} The next step is imputing the missing potential outcomes. That is, for treated units we want an estimate of $Y_i(0)$ and for untreated units of $Y_i(1)$. As already discussed above, we simply use \ref{imputation1} and \ref{imputation2}, where $\widehat{F}_0$ and $\widehat{F}_1$ are the empirical distribution functions estimated from the untreated and treated units respectively.
 	
@@ -203,6 +204,8 @@ The proposed algorithm consists of four main steps:
 	where $\widehat{G}^{-1}$ denotes the quantile function of the empirical distribution $\widehat{G}$.
 	
 \end{enumerate}
+
+
 
 \subsection{Asymptotics}
 
