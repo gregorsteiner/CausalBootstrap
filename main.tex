@@ -27,6 +27,7 @@
 \newtheorem{corollary}[thm]{Corollary}
 \newtheorem{remark}[thm]{Remark}
 \newtheorem*{remark*}{Remark}
+\newtheorem{assumption}[thm]{Assumption}
 
 % customize math operators
 \newcommand{\E}{{\mathbb E}}
@@ -70,43 +71,47 @@ This is applied to the problem of marriage market incentives. I find evidence th
 
 \section{Introduction}
 
-
-
 The bootstrap was originally proposed by \cite{Efron_1982} and is frequently used in situations where standard parametric inference is difficult or even impossible. \cite{Imbens_2021} suggest a modified version of the bootstrap for causal inference problems.
 
-In causal inference, there are generally two sources of uncertainty: sampling uncertainty and design uncertainty. Sampling uncertainty stems from the stochastic nature of the sampling process, while design uncertainty refers to the stochastic nature of the treatment assignment. The latter is somewhat unique to situations where the interest lies on the causal effect of some treatment and is not present in classical statistics. That is why the classical bootstrap needs to be modified in order to account for both sources of uncertainty.
+Causal inference from a statistical perspective is concerned with measuring the effects of causes \citep{Holland_1986}. This is distinct from associational inference. Causal relationships cannot be inferred from associations alone. The reason is that the association may derive from a confounding third variable. Or alternatively, an association arises by reverse causation, i.e. the causality runs in the other direction.
 
-In this paper, constructing confidence intervals for the Average Treatment Effect (ATE) based on \cite{Imbens_2021} is extensively discussed. As an illustrative example, I then apply the method to marriage market incentives: Men tend to favor less ambitious romantic partners. This creates a trade-off for women: Actions that lead to professional success may lead to failure in the marriage market. Utilizing data by \cite{Bursztyn_2017}, I test whether women are more cautious about signaling professional ambition when potential partners observe their preferences.
+In this paper, constructing confidence intervals for the Average Treatment Effect (ATE) based on \cite{Imbens_2021} is extensively discussed. The ATE is a measure of the average effect of some treatment on some outcome of interest. For example, when testing a medical drug against high blood pressure, we would be interested in the average reduction in blood pressure after taking the drug. Similarly, the ATE is an important causal parameter in many applications.
 
-Section \ref{setting} introduces the setting and some notation, section \ref{bootstrap} explains the causal bootstrap, section \ref{application} applies it to the marriage market incentives problem, and section \ref{Conclusion} concludes.
+As an illustrative example, I then apply the method to marriage market incentives: Men tend to favor less ambitious romantic partners. This creates a trade-off for women: Actions that lead to professional success may lead to failure in the marriage market. Utilizing data by \cite{Bursztyn_2017}, I test whether women are more cautious about signaling professional ambition when potential partners observe their preferences.
+
+Section \ref{setting} introduces the setting and some notation, Section \ref{bootstrap} explains the causal bootstrap, Section \ref{application} applies it to the marriage market incentives problem, and Section \ref{Conclusion} concludes.
 
 
 
 \section{Setting} \label{setting}
 
-This paper focuses on situations of the following form: A sample of $n$ units is either exposed to a treatment (treatment group) or not (control group), and we are interested in the causal effect of said treatment for the entire population of $N \geq n$ units. That is, we observe an outcome $Y_i$ and a binary variable $D_i \in \{0, 1\}$ indicating treatment for $i = 1,\ldots, n$. In such situations we face two types of uncertainty: sampling and design uncertainty. Sampling uncertainty stems from the fact that we only observe $n \leq N$ units, while design uncertainty refers to the stochastic nature of treatment assignment.
+This paper focuses on situations of the following form: A sample of $n$ units is either exposed to a treatment (treatment group) or not (control group), and we are interested in the causal effect of said treatment for the entire population of $N \geq n$ units. That is, we observe an outcome $Y_i$ and a binary variable $D_i \in \{0, 1\}$ (the treatment) for $i = 1,\ldots, n$. $D_i$ indicates treatment for unit $i$ and takes on the value $1$ if unit $i$ is treated, and $0$ else.
 
-Using Rubin's potential outcome framework \citep{Rubin_2005}, we denote the outcome as $Y(1)$ if treated and as $Y(0)$ otherwise. The actual outcome $Y_i$ is simply
+In such situations we face two types of uncertainty: sampling and design uncertainty. Sampling uncertainty stems from the fact that we only observe $n \leq N$ units, while design uncertainty refers to the stochastic nature of treatment assignment. A short example will help to clarify this difference: Assume a pharmaceutical company wants to test their drug in a randomized trial. They randomly select patients to participate in this experiment. Among the chosen patients they randomly assign treatment, that is half of them are treated at random and the other half acts as control group. Now there are two sources of uncertainty: They could have chosen different patients to participate (sampling uncertainty) and they could have assigned treatment differently among the chosen patients (design uncertainty). The second choice (assigning treatment) is somewhat unique to causal inference settings.
+
+To formalize the concept of causality, we use Rubin's potential outcome framework \citep{Rubin_2005}. Note that there are other approaches to causality, for example the graphical methods by Judea Pearl \citep[see for example][]{Pearl_2009}, but Rubin's framework is best suited for our purposes. We denote the outcome as $Y(1)$ if treated and as $Y(0)$ otherwise. The actual outcome $Y_i$ is simply
 $$
 Y_i = D_i Y_i(1) + (1-D_i) Y_i(0) = \begin{cases}
 	Y_i(1), & D_i = 1 \\
-	Y_i(0), & D_i = 0
-\end{cases}.
+	Y_i(0), & D_i = 0.
+\end{cases}
 $$
 
-For some unit $i$ the unit-causal effect is $Y_i(1) - Y_i(0)$, but only one of these is actually observed. Therefore, the unit-causal effect cannot be identified. \cite{Holland_1986} calls this the fundamental problem of causal inference. However, we can estimate the Average Treatment Effect (ATE), that is
+For some unit $i$ the unit-causal effect is $Y_i(1) - Y_i(0)$, but only one of these is actually observed. Therefore, the unit-causal effect cannot be identified. \cite{Holland_1986} calls this the fundamental problem of causal inference.
+
+However, we can estimate the Average Treatment Effect (ATE), that is the average difference between outcomes in the treated and untreated state,
 $$
-\tau := ATE = \frac{1}{N} \sum_{i = 1}^{N} Y_i(1) - Y_i(0).
+\tau := ATE = \frac{1}{N} \sum_{i = 1}^{N} \big( Y_i(1) - Y_i(0) \big).
 $$
-Let $n_0, n_1$ denote the number of untreated and treated units respectively in a sample of $n = n_0 + n_1$ observations and let $R_i \in \{0, 1\}$ be an indicator whether the i-th population unit is included in the sample. Then the standard difference in means estimator for $\tau$ is
+In some sense the ATE is just the expected change in the outcome caused by treatment. In other words, this is the change we would expect if an untreated unit becomes treated. Let $n_0, n_1$ denote the number of untreated and treated units respectively in a sample of $n = n_0 + n_1$ observations and let $R_i \in \{0, 1\}$ be an indicator whether the i-th population unit is included in the sample. Then the standard difference in means estimator for $\tau$ is
 $$
 \widehat{\tau} = \frac{1}{n_1} \sum_{i = 1}^{N} R_i D_i Y_i - \frac{1}{n_0} \sum_{i = 1}^{N} R_i (1 - D_i) Y_i = \bar{Y}_1 - \bar{Y}_0.
 $$
 
 Let
-$$S_D^2 = \frac{1}{N-1} \sum_{i = 1}^{N} (Y_i(D) - \bar{Y}(D))^2,$$
+$$S_D^2 = \frac{1}{N-1} \sum_{i = 1}^{N} \big(Y_i(D) - \bar{Y}(D) \big)^2,$$
 where $\bar{Y}(D) = \frac{1}{N} \sum_{i = 1}^{N} Y_i(D)$ for $D\in \{0, 1\}$, and
-$$S_{01}^2 = \frac{1}{N-1} \sum_{i = 1}^{N} (Y_i(1) - Y_i(0) - \tau).$$ Then the true variance of $\widehat{\tau}$ is
+$$S_{01}^2 = \frac{1}{N-1} \sum_{i = 1}^{N} \big( Y_i(1) - Y_i(0) - \tau \big)^2.$$ Then the true variance of $\widehat{\tau}$ is
 $$
 \Var(\widehat{\tau}) = \frac{S_0^2}{n_0} + \frac{S_1^2}{n_1} - \frac{S_{01}^2}{N}.
 $$
@@ -114,11 +119,11 @@ Traditional estimators ignored the $S_{01}^2$ term, which leads to overestimatio
 $$
 \widehat{\Var}_{AGL} = \frac{\widehat{S}_0^2}{n_0} + \frac{\widehat{S}_1^2}{n_1} - \frac{\widehat{S}_{01}^2}{N},
 $$
-where $\widehat{S}_1^2 = \frac{1}{n_1 - 1} \sum_{i = 1}^{N} R_i D_i Y_i$, $\widehat{S}_0^2 = \frac{1}{n_0 - 1} \sum_{i = 1}^{N} R_i (1 - D_i) Y_i$, and $\widehat{S}_{01}^2$ estimates the lower bound of $S_{01}^2$ \citep[see][section 3]{aronow_2014}. Therefore, $\widehat{\Var}_{AGL}$ estimates the upper bound of $\Var(\widehat{\tau})$.
+where $\widehat{S}_1^2 = \frac{1}{n_1 - 1} \sum_{i = 1}^{N} R_i D_i Y_i$, $\widehat{S}_0^2 = \frac{1}{n_0 - 1} \sum_{i = 1}^{N} R_i (1 - D_i) Y_i$, and $\widehat{S}_{01}^2$ estimates the lower bound of $S_{01}^2$ \citep[see][Section 3]{aronow_2014}. Therefore, $\widehat{\Var}_{AGL}$ estimates the upper bound of $\Var(\widehat{\tau})$.
 
 \section{The causal bootstrap} \label{bootstrap}
 
-This section introduces the causal bootstrap proposed by \cite{Imbens_2021} and closely follows their sections 2, 3, and 5.
+This section introduces the causal bootstrap proposed by \cite{Imbens_2021} and closely follows their Sections 2, 3, and 5.
 
 \subsection{Preliminaries and assumptions}
 The aim of the causal bootstrap is to account for the stochastic nature of the treatment assignment. This takes us back to the potential outcome problem. For each observation we only observe one potential outcome. A natural approach is to impute the missing potential outcome. To do this, it is useful to start with the population joint distribution function of the pair of potential outcomes,
@@ -129,11 +134,11 @@ Unfortunately, there is no consistent estimator for $F_{01}^p$, but we can expre
 $$
 F_{01}^p (y_0, y_1) = C(F_0^p(y_0), F_1^p(y_1)),
 $$
-where $C: [0, 1]^2 \to [0, 1]$ is non-decreasing in both arguments. Such a copula $C$ is guaranteed to exist by Sklar's theorem, but it need not be unique. Using $C$ we can obtain an estimate $\widehat{F}_{01} := C(\widehat{F}_0, \widehat{F}_1)$. However, since $C$ need not be unique, we want to choose it conservatively. If the first four moments of $F_0(y_0)$ and $F_1(y_1)$ are bounded, the isotone coupling,
+where $C: [0, 1]^2 \to [0, 1]$ is non-decreasing in both arguments. Such a copula $C$ is guaranteed to exist by Sklar's theorem \citep[see for example][]{Nelsen_2007}, but it need not be unique. Using $C$ we can obtain an estimate $\widehat{F}_{01} := C(\widehat{F}_0, \widehat{F}_1)$. However, since $C$ need not be unique, we want to choose it conservatively. If the first four moments of $F_0(y_0)$ and $F_1(y_1)$ are bounded, the isotone coupling,
 $$
 C^{iso}(u, v) := \min(u, v),
 $$
-is the least favorable coupling in the sense that it attains an upper bound on the asymptotic variance of $\widehat{\tau}$ \citep[][sections 2.4 and 2.5]{Imbens_2021}. The isotone coupling allows us to impute the missing potential outcomes as
+is the least favorable coupling in the sense that it attains an upper bound on the asymptotic variance of $\widehat{\tau}$ \citep[][Sections 2.4 and 2.5]{Imbens_2021}. The isotone coupling allows us to impute the missing potential outcomes as
 \begin{align} \label{imputation1}
 	Y_i(0) &= \begin{cases}
 		Y_i, & D_i = 0 \\
@@ -142,17 +147,22 @@ is the least favorable coupling in the sense that it attains an upper bound on t
 	\label{imputation2}
 	Y_i(1) &= \begin{cases}
 		\widehat{F}_1^{-1}(\widehat{F}_0(Y_i)), & D_i = 0 \\
-		Y_i, & D_i = 1
-	\end{cases}.
+		Y_i, & D_i = 1.
+	\end{cases}
 \end{align}
 However, this is only valid for two-sided inference on the ATE. For other problems the appropriate least favorite coupling will likely be a different one.
 
 Furthermore, we need a few assumptions:
-\begin{enumerate}
-	\item The observed units are sampled at random from the population, that is ($Y_i(0), Y_i(1)$) are independent of $R_i$.
-	\item Treatment assignment is randomized, that is ($Y_i(0), Y_i(1)$) are independent of $D_i$\footnote{The approach can be extended to observational studies, if the outcome is independent of treatment assignment conditional on observable covariates (unconfoundedness). For details see \cite{Imbens_2021} section 6.}.
-	\item The outcome $Y_i(D_i)$ for unit $i$ is not affected by other units' treatment status, that is the Stable Unit Treatment Value Assumption (SUTVA) holds.
-\end{enumerate}
+
+\begin{assumption} \label{as1}
+	The observed units are sampled at random from the population, that is ($Y_i(0), Y_i(1)$) are independent of $R_i$.
+\end{assumption}
+\begin{assumption} \label{as2}
+	Treatment assignment is randomized, that is ($Y_i(0), Y_i(1)$) are independent of $D_i$\footnote{The approach can be extended to observational studies, if the outcome is independent of treatment assignment conditional on observable covariates (unconfoundedness). For details see \cite{Imbens_2021} Section 6.}.
+\end{assumption}
+\begin{assumption} \label{as3}
+	The outcome $Y_i(D_i)$ for unit $i$ is not affected by other units' treatment status, that is the Stable Unit Treatment Value Assumption (SUTVA) holds.
+\end{assumption}
 
 After establishing these preliminaries, we can finally outline the bootstrap procedure below.
 
@@ -199,25 +209,25 @@ The proposed algorithm consists of four main steps:
 This section provides a characterization of the asymptotic behavior of the bootstrap procedure.
 
 \begin{thm}
-	Assume all the assumption from above hold, then $\widehat{\tau}$ and $\widehat{\sigma}$ are consistent for $\tau$ and $\sigma$.
+	Assume assumptions \ref{as1}, \ref{as2}, and \ref{as3} hold and the first four moments of $F_0(y_0)$ and $F_1(y_1)$ are bounded, then $\widehat{\tau}$ and $\widehat{\sigma}$ are consistent for $\tau$ and $\sigma$.
 \end{thm}
 
 \begin{proof}
-	By Glivenko-Cantelli, $\widehat{F}_0(y_0)$ and $\widehat{F}_1(y_1)$ converge almost surely to the true distribution functions, $F_0(y_0)$ and $F_1(y_1)$. This implies convergence in probability and therefore consistency.
+	By Glivenko-Cantelli \citep[see][page 265]{Asymptotic}, $\widehat{F}_0(y_0)$ and $\widehat{F}_1(y_1)$ converge almost surely to the true distribution functions, $F_0(y_0)$ and $F_1(y_1)$. This implies convergence in probability and therefore consistency.
 	
 	Recall that $\tau$ and $\sigma$ are functions of the marginal distribution functions, so they can be written as $\tau(F_0(y_0), F_1(y_1))$ and $\sigma(F_0(y_0), F_1(y_1))$. Under the assumption that the first four moments of $F_0(y_0)$ and $F_1(y_1)$ are bounded, they are  even continous functions of $F_0(y_0)$ and $F_1(y_1)$ \citep[see][section 5.1]{Imbens_2021}. Thus, by the continous mapping theorem, the estimators converge in probability to the true parameters (or parameter bounds),
 	$$
-	\widehat{\tau}(\widehat{F}_0(y_0), \widehat{F}_1(y_1)) \overset{p}{\to} \tau(F_0(y_0), F_1(y_1))
+	\widehat{\tau}\big(\widehat{F}_0(y_0), \widehat{F}_1(y_1)\big) \overset{p}{\to} \tau\big(F_0(y_0), F_1(y_1)\big)
 	$$
 	and
 	$$
-	\widehat{\sigma}(\widehat{F}_0(y_0), \widehat{F}_1(y_1)) \overset{p}{\to} \sigma(F_0(y_0), F_1(y_1)),
+	\widehat{\sigma}\big(\widehat{F}_0(y_0), \widehat{F}_1(y_1)\big) \overset{p}{\to} \sigma\big(F_0(y_0), F_1(y_1)\big),
 	$$
 	that is they are consistent.
 \end{proof}
 
 \begin{thm}
-	Assume all the assumptions from above hold, then 
+	Assume assumptions \ref{as1}, \ref{as2}, and \ref{as3} hold, then 
 	$$
 	\frac{\widehat{\tau} - \tau}{\widehat{\sigma} / \sqrt{n}} \overset{d}{\to} \mathcal{N} \left( 0, \frac{\sigma^2(F_{01}^p)}{\sigma^2(F_0^p, F_1^p)}\right),
 	$$
@@ -230,7 +240,7 @@ The proof of this result is rather involved, the interested reader is referred t
 The next step is establishing a central limit theorem (CLT) for the bootstrap analogues. Let $\widehat{F}_0^*$ and $\widehat{F}_1^*$ denote the empirical distribution functions for a bootstrap replication for the untreated and treated observations respectively. Furthermore, let $\widehat{\tau}^* = \tau(\widehat{F}_0^*, \widehat{F}_1^*)$ and $\widehat{\sigma}^* = \sigma(\widehat{F}_0^*, \widehat{F}_1^*)$ denote the estimators' bootstrap analogues.
 		
 \begin{thm} \label{Thm3.2}
-	Assume all the assumptions from above hold, then
+	Assume assumptions \ref{as1}, \ref{as2}, and \ref{as3} hold, then
 	$$
 	\frac{\widehat{\tau}^* - \widehat{\tau}}{\widehat{\sigma}^* / \sqrt{n}} \overset{d}{\to} \mathcal{N} \left( 0, 1 \right),
 	$$
@@ -242,9 +252,9 @@ This result can be proven in a similar manner as \ref{Thm3.2} \citep[see][sectio
 Finally, we can use these results to show that the confidence intervals obtained by the bootstrap procedure are indeed valid, that is the asymptotic coverage probability is at least as large as the nominal coverage probability.
 
 \begin{thm}
-	Under the assumptions from above, the confidence interval obtained by \ref{CI} is asymptotically valid, that is,
+	Assume assumptions \ref{as1}, \ref{as2}, and \ref{as3} hold, then the confidence interval obtained by \ref{CI} is asymptotically valid, that is,
 	$$
-	\lim_{n \to \infty} \inf_{F_{01}^p} \mathbb{P}_{F_{01}^p} (\tau(F_{01}^p) \in CI(1-\alpha)) \geq 1 - \alpha.
+	\lim_{n \to \infty} \inf_{F_{01}^p} \mathbb{P}_{F_{01}^p} \big(\tau(F_{01}^p) \in CI(1-\alpha) \big) \geq 1 - \alpha.
 	$$
 \end{thm}
 
