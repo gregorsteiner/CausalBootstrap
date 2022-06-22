@@ -282,27 +282,7 @@ The heart of the questionnaire is a series of questions about their desired comp
 
 We refer to the public version of the questionnaire as treatment (i.e. $D_i = 1$ if student $i$ received the public version), while the students who received the private version act as the control group. Out of the 60 single women, 29 received the treatment.
 
-\begin{table}[!htbp] \centering \renewcommand*{\arraystretch}{1.1}\caption{Summary Statistics}\label{SumStats}\resizebox{\textwidth}{!}{
-		\begin{tabular}{lrrrrrrr}
-			\hline
-			Variable & N & Mean & Std. Dev. & Min & Pctl. 25 & Pctl. 75 & Max \\ 
-			\hline
-			treatment & 354 &  &  &  &  &  &  \\ 
-			... Private & 176 & 49.7\% &  &  &  &  &  \\ 
-			... Public & 178 & 50.3\% &  &  &  &  &  \\ 
-			male & 354 & 0.681 & 0.467 & 0 & 0 & 1 & 1 \\ 
-			single & 346 & 0.474 & 0.5 & 0 & 0 & 1 & 1 \\ 
-			class & 346 &  &  &  &  &  &  \\ 
-			... Female \& Non-single & 51 & 14.7\% &  &  &  &  &  \\ 
-			... Female \& Single & 60 & 17.3\% &  &  &  &  &  \\ 
-			... Male \& Non-single & 131 & 37.9\% &  &  &  &  &  \\ 
-			... Male \& Single & 104 & 30.1\% &  &  &  &  &  \\ 
-			compensation & 353 & 136.494 & 33.856 & 75 & 112.5 & 162.5 & 250 \\ 
-			hours & 353 & 51.66 & 8.779 & 40 & 45.5 & 55.5 & 80\\ 
-			\hline
-		\end{tabular}
-	}
-\end{table}
+\input{Tables/SummaryTable.tex}
 
 To draw conclusions about the effect of observability on professional ambition, we focus on desired compensation and hours of work per week. The respective questions on the questionnaire are \textit{What is your desired level of compensation?} and \textit{How many hours per week are you willing to work on a regular basis?} Many students provided their answers as a range, e.g. 175-200 (in thousand USD) or 50-55 hours. Such answers are transformed by taking the mean of the range.
 
@@ -312,18 +292,7 @@ Table \ref{mean values} shows the mean values by group and treatment. To be cons
 	\centering
 	\caption{Mean values for desired compensation and hours by type and treatment}
 	\label{mean values}
-	\begin{tabular}{l|r|r|r|r|r|r}
-		\hline
-		& \multicolumn{3}{c|}{Compensation} & \multicolumn{3}{|c}{Hours} \\
-		\hline
-		& Private & Public & Difference & Private & Public & Difference \\
-		\hline
-		Female \& Non-single & 134.72 & 132.29 & -2.43 & 52.33 & 48.60 & -3.73\\
-		Female \& Single & 130.65 & 113.79 & -16.85 & 51.88 & 48.33 & -3.54\\
-		Male \& Non-single & 140.67 & 133.73 & -6.94 & 51.06 & 53.88 & 2.82\\
-		Male \& Single & 144.69 & 145.31 & 0.62 & 51.80 & 52.16 & 0.36\\
-		\hline
-	\end{tabular}
+	\input{Tables/Means.tex}
 \end{table}
 
 
@@ -339,21 +308,7 @@ Table \ref{CIs} shows the estimated 95\% confidence intervals for all four class
 	\centering
 	\caption{95\% Confidence Intervals for the ATE}
 	\label{CIs}
-	\begin{tabular}{l|r|r|r|r}
-		\hline
-		& \multicolumn{2}{c|}{Compensation} & \multicolumn{2}{|c}{Hours} \\
-		\hline
-		& Lower Bound & Upper Bound & Lower Bound & Upper Bound\\
-		\hline
-		Female \& Non-single & -12.97 & 12.45 & -5.28 & -0.28\\
-		\hline
-		Female \& Single & -25.77 & -2.63 & -4.28 & 2.72\\
-		\hline
-		Male \& Non-single & -16.59 & 4.03 & -4.24 & 1.47\\
-		\hline
-		Male \& Single & -11.95 & 10.28 & -4.22 & 1.62\\
-		\hline
-	\end{tabular}
+	\input{Tables/BootResults.tex}
 \end{table}
 
 Thus, I can only partially confirm the results obtained by \cite{Bursztyn_2017}. They also obtain a significant effect for hours of work. However, they use standard errors from regressing hours on treatment. This is conceptually different from what is done here. While the causal bootstrap also accounts for design uncertainty, their approach only accounts for sampling uncertainty.

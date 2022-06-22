@@ -49,7 +49,9 @@ dat <- within(dat, {
 # summary table
 vtable::sumtable(dat[, c("treatment", "male", "single",
                          "class", "compensation", "hours")],
-                 out = "latex")
+                 out = "latex", file = "Tables/SummaryTable.tex",
+                 anchor = "SumStats", title = "Summary Statistics",
+                 fit.page = NA)
 
 
 # compute compensation and hours by class and estimate the ATE
@@ -61,7 +63,7 @@ Results <- do.call(cbind, lapply(dat[, c("compensation", "hours")],
 }))
 
 # export as tex table
-knitr::kable(Results, format = "latex", digits = 2)
+writeLines(knitr::kable(Results, format = "latex", digits = 2), "Tables/Means.tex")
 
 
 
@@ -97,8 +99,17 @@ Boot.CIs <- t(mapply(function(class, pop.size){
 
 colnames(Boot.CIs) <- rep(c("Lower Bound", "Upper Bound"), 2)
 
-# export as tex table
-knitr::kable(Boot.CIs, format = "latex", digits = 2)
+# convert to tex table
+boot.res <- knitr::kable(Boot.CIs, format = "latex", digits = 2)
+
+# add multicolummns as string
+boot.res <- sub("\\hline",
+                "\\hline & \\multicolumn{2}{c|}{Compensation} & \\multicolumn{2}{|c}{Hours} \\\\ \\hline",
+                boot.res, fixed = TRUE)
+
+
+# save table
+writeLines(boot.res, "Tables/BootResults.tex")
 
 
 
